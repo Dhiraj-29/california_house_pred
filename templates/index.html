@@ -1,0 +1,132 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>California Housing Predictor</title>
+
+    <link
+        rel="stylesheet"
+        href="{{ url_for('static', filename='css/style.css') }}"
+    >
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="{{ url_for('main') }}" class="brand">
+            <span class="brand-icon">⌂</span>
+            <span>HomeValue<span class="brand-highlight"> AI</span></span>
+        </a>
+
+        <span class="nav-label">MACHINE LEARNING PROJECT</span>
+    </header>
+
+    <main class="container">
+
+        <section class="hero">
+            <span class="eyebrow">SMART REAL ESTATE ESTIMATOR</span>
+
+            <h1>Find your home's<br>
+                <span class="highlight">estimated value.</span>
+            </h1>
+
+            <p class="hero-text">
+                Enter your housing data and let our machine learning
+                model estimate the median house value in California.
+            </p>
+
+            <div class="feature-row">
+                <span>✓ ML-powered estimation</span>
+                <span>✓ Simple and fast</span>
+            </div>
+        </section>
+
+        <section class="prediction-card">
+
+            <div class="card-heading">
+                <div>
+                    <span class="section-label">PROPERTY DETAILS</span>
+                    <h2>Housing information</h2>
+                    <p>Fill in all the numerical features below.</p>
+                </div>
+
+                <div class="home-icon">⌂</div>
+            </div>
+
+            {% if error %}
+                <div class="alert" role="alert">
+                    <strong>Unable to predict</strong>
+                    <p>{{ error }}</p>
+                </div>
+            {% endif %}
+
+            <form method="POST" action="{{ url_for('main') }}">
+
+                <div class="form-grid">
+
+                    {% for column in columns %}
+                    <div class="form-group">
+                        <label for="field-{{ loop.index }}">
+                            {{ column.replace('_', ' ') | title }}
+                        </label>
+
+                        <input
+                            type="number"
+                            id="field-{{ loop.index }}"
+                            name="{{ column }}"
+                            value="{{ values.get(column, '') }}"
+                            step="any"
+                            inputmode="decimal"
+                            placeholder="Enter {{ column.replace('_', ' ') | lower }}"
+                            required
+                        >
+                    </div>
+                    {% endfor %}
+
+                </div>
+
+                <button type="submit" class="predict-button">
+                    Predict House Value
+                    <span aria-hidden="true">→</span>
+                </button>
+
+                <p class="form-note">
+                    Please provide the features in the units expected
+                    by your trained model.
+                </p>
+
+            </form>
+
+            {% if prediction is not none %}
+            <section class="result-card" aria-live="polite">
+                <div class="result-icon">✓</div>
+
+                <div class="result-content">
+                    <span class="section-label">PREDICTION COMPLETE</span>
+                    <h2>Estimated median house value</h2>
+
+                    <p class="result-value">
+                        {{ "%.4f"|format(prediction) }}
+                    </p>
+
+                    <p class="result-note">
+                        Model output in its original prediction units.
+                    </p>
+                </div>
+            </section>
+            {% endif %}
+
+        </section>
+
+        <footer class="footer">
+            <p>California Housing Predictor</p>
+            <p>Built with Flask, Python &amp; Machine Learning</p>
+        </footer>
+
+    </main>
+
+</body>
+</html>
